@@ -126,6 +126,36 @@ class AccountSerializer
 end
 ```
 
+### Sideload
+
+Sometimes, the collection to serialize can have complex attributes and required some extra computation.
+When `includes` are not enough `sideload` can use the collection to serialize to retrieve extra data that will be
+accessible during the serialization.
+
+```ruby
+class AccountSerializer
+ include BrightSerializer::Serializer
+ attributes :id, :first_name, :last_name
+
+ # sideload are passed as the third param of the block. To use a specific
+ # `sideloader` call the method with the same name setted with `sideload`.
+ attribute :friend_ids do |object, _params, sideloaders|
+  sideloaders.friend_ids[object.id]
+ end
+
+ # Load the data and return in a format that can be used with `object`.
+ # `params` is also accessible as the second param passed in the block.
+ sideload :friend_ids do |objects, _params|
+  Friend.where(account_id: objects.map(&:id))
+        .pluck(:account_id, :friend_id)
+        .each_with_object({}) do |(account_id, friend_id), result|
+   result[account_id] ||= []
+   result[account_id] << friend_id
+  end
+ end
+end
+```
+
 ### Entity
 
 You can define the entity of your serializer to generate documentation with the option `entity`.

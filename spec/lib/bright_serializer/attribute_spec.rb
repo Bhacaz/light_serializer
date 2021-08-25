@@ -11,7 +11,7 @@ RSpec.describe BrightSerializer::Attribute do
         it 'return the value' do
           object_to_serialize.each_key do |key|
             instance = described_class.new(key.to_sym, nil, nil)
-            expect(instance.serialize(object_to_serialize, {})).to eq object_to_serialize[key]
+            expect(instance.serialize(object_to_serialize, {}, nil)).to eq object_to_serialize[key]
           end
         end
       end
@@ -35,7 +35,7 @@ RSpec.describe BrightSerializer::Attribute do
       it 'return the value' do
         %i[first_name last_name is_admin].each do |attribute|
           instance = described_class.new(attribute, nil, nil)
-          expect(instance.serialize(object_to_serialize, {})).to eq object_to_serialize.send(attribute)
+          expect(instance.serialize(object_to_serialize, {}, nil)).to eq object_to_serialize.send(attribute)
         end
       end
     end

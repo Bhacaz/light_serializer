@@ -5,6 +5,7 @@ require 'set'
 require_relative 'attribute'
 require_relative 'inflector'
 require_relative 'entity/base'
+require_relative 'sideloader'
 
 module BrightSerializer
   module Serializer
@@ -21,6 +22,7 @@ module BrightSerializer
       @object = object
       @params = options.delete(:params)
       @fields = Set.new(options.delete(:fields))
+      @sideloader = Sideloader.new(self.class.sideloaders, @object, @params)
     end
 
     def serialize(object)
@@ -28,7 +30,7 @@ module BrightSerializer
         next if @fields.any? && !@fields.include?(attribute.key)
         next unless attribute.condition?(object, @params)
 
-        result[attribute.transformed_key] = attribute.serialize(object, @params)
+        result[attribute.transformed_key] = attribute.serialize(object, @params, @sideloader)
       end
     end
 
@@ -49,7 +51,7 @@ module BrightSerializer
     alias to_json serializable_json
 
     module ClassMethods
-      attr_reader :attributes_to_serialize, :transform_method
+      attr_reader :attributes_to_serialize, :transform_method, :sideloaders
 
       def inherited(subclass)
         super
@@ -96,6 +98,11 @@ module BrightSerializer
 
       def entity_name
         name.split('::').last.downcase
+      end
+
+      def sideload(name, &block)
+        @sideloaders ||= {}
+        @sideloaders[name] = block
       end
     end
   end

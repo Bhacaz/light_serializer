@@ -19,12 +19,12 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.1)
-    concurrent-ruby (1.1.7)
+    concurrent-ruby (1.1.9)
     diff-lcs (1.4.4)
     docile (1.4.0)
-    faker (2.15.1)
+    faker (2.19.0)
       i18n (>= 1.6, < 2)
-    i18n (1.8.5)
+    i18n (1.8.10)
       concurrent-ruby (~> 1.0)
     oj (3.11.1)
     parallel (1.20.1)
